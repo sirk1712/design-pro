@@ -75,3 +75,17 @@ def create_order(request):
     else:
         form = OrderForm()
     return render(request, 'orders/create_order.html', {'form': form})
+
+
+# просмотр заявок (с фильтрацией)
+@login_required
+def profile_view(request):
+    # берем заявки только текущего пользователя, сортируем по дате (новые сверху)
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+
+    # фильтрация по статусу
+    status_filter = request.GET.get('status')
+    if status_filter:
+        orders = orders.filter(status=status_filter)
+
+    return render(request, 'orders/profile.html', {'orders': orders})

@@ -1,0 +1,69 @@
+{% extends "orders/base.html" %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Мои заявки</h2>
+      <a href="{% url 'create_order' %}" class="btn btn-success">Создать заявку</a>
+  </div>
+
+  <!-- вывод системных сообщений (об успехе или ошибке) -->
+  {% if messages %}
+      {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+              {{ message }}
+          </div>
+      {% endfor %}
+  {% endif %}
+
+  <!-- фильтр по статусу -->
+  <form method="get" class="row g-3 mb-4">
+      <div class="col-auto">
+          <select name="status" class="form-select">
+              <option value="">Все статусы</option>
+              <option value="new" {% if request.GET.status == 'new' %} selected {% endif %}>Новая</option>
+              <option value="in_progress" {% if request.GET.status == 'in_progress' %} selected {% endif %}>Принято в работу</option>
+              <option value="done" {% if request.GET.status == 'done' %} selected {% endif %}>Выполнено</option>
+          </select>
+      </div>
+      <div class="col-auto">
+          <button type="submit" class="btn btn-primary">Фильтровать</button>
+      </div>
+  </form>
+
+  <!-- таблица заявок -->
+  <div class="table-responsive">
+      <table class="table table-bordered table-striped">
+          <thead class="table-dark">
+              <tr>
+                  <th>Дата</th>
+                  <th>Название</th>
+                  <th>Категория</th>
+                  <th>Статус</th>
+                  <th>Действия</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for order in orders %}
+              <tr>
+                  <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+                  <td>{{ order.title }}</td>
+                  <td>{{ order.category.name }}</td>
+                  <td>
+                      <span class="badge
+                          {% if order.status == 'new' %}bg-secondary
+                          {% elif order.status == 'in_progress' %}bg-warning text-dark
+                          {% else %}bg-success{% endif %}">
+                          {{ order.get_status_display }}
+                      </span>
+                  </td>
+
+              </tr>
+              {% empty %}
+              <tr>
+                  <td colspan="5" class="text-center">У вас пока нет заявок.</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+{% endblock %}
