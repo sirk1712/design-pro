@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import RegisterForm
+from .forms import RegisterForm, OrderForm
+from .models import Order
 
 # просмотр главной страницы
 def index(request):
@@ -58,3 +59,19 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     return render(request, 'orders/profile.html')
+
+# создание заявки
+@login_required
+def create_order(request):
+    if request.method == 'POST':
+        form = OrderForm(request.POST, request.FILES)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.user = request.user # привязываем к текущему пользователю
+            # статус 'new' ставится автоматически в модели
+            order.save()
+            messages.success(request, "Заявка успешно создана!")
+            return redirect('profile')
+    else:
+        form = OrderForm()
+    return render(request, 'orders/create_order.html', {'form': form})

@@ -3,6 +3,9 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 import re
 
+from .models import Order
+
+
 # получаем нашу кастомную модель
 User = get_user_model()
 
@@ -69,3 +72,29 @@ class RegisterForm(forms.ModelForm):
             # для всех остальных полей -> form-control
             else:
                 field.widget.attrs.update({'class': 'form-control'})
+
+# форма для создания заявки
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['title', 'description', 'category', 'photo']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
+        }
+
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        if photo:
+            # проверяем размер изображения (2 Мб)
+            if photo.size > 2 * 1024 * 1024:
+                raise forms.ValidationError("Размер файла не должен превышать 2Мб.")
+
+            # проверяем расширения изображения
+            valid_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
+            import os
+            ext = os.path.splitext(photo.name)[1].lower()
+            if ext not in valid_extensions:
+                raise forms.ValidationError("Допустимые форматы: jpg, jpeg, png, bmp.")
+        return photo
