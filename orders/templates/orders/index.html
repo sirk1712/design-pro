@@ -4,5 +4,27 @@
   <div class="p-5 mb-4 bg-light rounded-3 text-center">
       <h1 class="display-5 fw-bold">Студия дизайна Design.pro</h1>
       <p class="lead">Загрузите план помещения, и мы предложим варианты оформления!</p>
+
+      <div class="alert alert-info mt-4">
+          Заявок в работе: <strong>{{ in_progress_count }}</strong>
+      </div>
+  </div>
+
+  <h3 class="mt-5 mb-4">Наши последние работы</h3>
+  <div class="row">
+    {% for order in completed_orders %}
+      <div class="col-md-3">
+        <div class="card">
+          <img src="{{ order.photo.url }}" class="card-img-top" alt="{{ order.title }}" style="height: 200px; object-fit: cover;">
+          <div class="card-body">
+            <h5 class="card-title">{{ order.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ order.category.name }}</h6>
+            <p class="card-text"><small class="text-muted">{{ order.created_at|date:"d.m.Y" }}</small></p>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>Пока нет выполненных работ.</p>
+    {% endfor %}
   </div>
 {% endblock %}
