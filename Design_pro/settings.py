@@ -131,3 +131,7 @@ MAILERS = {
 }
 
 AUTH_USER_MODEL = 'orders.CustomUser'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'

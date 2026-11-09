@@ -56,7 +56,11 @@
                           {{ order.get_status_display }}
                       </span>
                   </td>
-
+                  <td>
+                      {% if order.status == 'new' %}
+                          <a href="{% url 'delete_order' order.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                      {% endif %}
+                  </td>
               </tr>
               {% empty %}
               <tr>

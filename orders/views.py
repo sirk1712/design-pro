@@ -55,7 +55,7 @@ def logout_view(request):
     logout(request)
     return redirect('index')
 
-# личный кабинет (заглушка)
+# личный кабинет
 @login_required
 def profile_view(request):
     return render(request, 'orders/profile.html')
@@ -89,3 +89,22 @@ def profile_view(request):
         orders = orders.filter(status=status_filter)
 
     return render(request, 'orders/profile.html', {'orders': orders})
+
+# удаление заявки
+@login_required
+def delete_order(request, pk):
+    # ищем заявку только среди заявок текущего пользователя
+    order = get_object_or_404(Order, pk=pk, user=request.user)
+
+    # проверяем, что статус заявки "Новая" (ее еще не взяли в работу)
+    if order.status != 'new':
+        messages.error(request, "Вы не можете удалить заявку, которую уже взяли в работу или выполнили.")
+        return redirect('profile')
+
+    if request.method == 'POST':
+        order.delete()
+        messages.success(request, "Заявка удалена.")
+        return redirect('profile')
+
+    # если это GET-запрос, показываем страницу подтверждения
+    return render(request, 'orders/delete_confirm.html', {'order': order})
