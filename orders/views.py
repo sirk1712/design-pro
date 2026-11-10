@@ -2,14 +2,18 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import RegisterForm, OrderForm
-from .models import Order
+from .models import Order, Category
 
 # просмотр главной страницы
 def index(request):
     # пока здесь нет заявок, просто рендерим пустую страницу
     return render(request, 'orders/index.html')
+
+# проверка, что вошедший пользователь - админ
+def is_admin(user):
+    return user.is_authenticated and user.is_superuser
 
 # регистрация
 def register_view(request):
@@ -63,6 +67,11 @@ def profile_view(request):
 # создание заявки
 @login_required
 def create_order(request):
+    # если пользователь - админ, не даем ему создавать заявку
+    if request.user.is_superuser:
+        messages.error(request, "Администраторы не могут создавать заявки.")
+        return redirect('profile')
+
     if request.method == 'POST':
         form = OrderForm(request.POST, request.FILES)
         if form.is_valid():
@@ -80,6 +89,11 @@ def create_order(request):
 # просмотр заявок (с фильтрацией)
 @login_required
 def profile_view(request):
+    # если зашел админ, то направляем его на панель управления
+    if request.user.is_superuser:
+        return redirect('admin_panel')
+
+    # логика для обычного пользователя
     # берем заявки только текущего пользователя, сортируем по дате (новые сверху)
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
 
@@ -108,3 +122,29 @@ def delete_order(request, pk):
 
     # если это GET-запрос, показываем страницу подтверждения
     return render(request, 'orders/delete_confirm.html', {'order': order})
+
+# страница панели управления заявками для админа
+@user_passes_test(is_admin, login_url='/login/')
+def admin_panel(request):
+    # берем все заявки из базы и сортируем по дате
+    orders = Order.objects.all().order_by('-created_at')
+    return render(request, 'orders/admin_panel.html', {'orders': orders})
+
+
+# изменение статуса заявки (принимает id заявки и новый статус)
+@user_passes_test(is_admin, login_url='/login/')
+def change_status(request, pk, new_status):
+    order = get_object_or_404(Order, pk=pk)
+
+    # разрешаем админу менять статус только если он "Новая"
+    if order.status == 'new' and new_status in ['in_progress', 'done']:
+        order.status = new_status
+        order.save()
+
+    return redirect('admin_panel')
+
+# управление категориями
+@user_passes_test(is_admin, login_url='/login/')
+def admin_categories(request):
+    categories = Category.objects.all()
+    return render(request, 'orders/admin_categories.html', {'categories': categories})

@@ -1,0 +1,42 @@
+{% extends "orders/base.html" %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Панель управления заявками</h2>
+      <a href="{% url 'admin_categories' %}" class="btn btn-warning">Управление категориями</a>
+  </div>
+
+  <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle">
+          <thead class="table-dark">
+              <tr>
+                  <th>Дата</th>
+                  <th>Пользователь</th>
+                  <th>Название</th>
+                  <th>Категория</th>
+                  <th>Статус</th>
+                  <th>Действия</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for order in orders %}
+              <tr>
+                  <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+                  <td>{{ order.user.username }}</td>
+                  <td>{{ order.title }}</td>
+                  <td>{{ order.category.name }}</td>
+                  <td>{{ order.get_status_display }}</td>
+                  <td>
+                      {% if order.status == 'new' %}
+                          <a href="{% url 'change_status' order.pk 'in_progress' %}" class="btn btn-sm btn-warning">В работу</a>
+                          <a href="{% url 'change_status' order.pk 'done' %}" class="btn btn-sm btn-success">Выполнено</a>
+                      {% else %}
+                          <span class="text-muted">Действий нет</span>
+                      {% endif %}
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+{% endblock %}

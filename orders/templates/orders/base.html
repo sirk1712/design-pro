@@ -16,17 +16,28 @@
             <a class="navbar-brand" href="{% url 'index' %}">Design.pro</a>
 
             <!-- кнопка бургер-меню для небольших экранов -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
-            </button>
+            </button> -->
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
+                            <!-- меню для админа -->
+                            <li class="nav-item">
+                                <a class="nav-link text-warning fw-bold" href="{% url 'admin_panel' %}">Панель управления</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'profile' %}">Мои заявки</a>
+                            </li>
+                        {% endif %}
+
                         <li class="nav-item">
                             <form action="{% url 'logout' %}" method="post" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-link nav-link" style="display:inline; cursor:pointer;">Выход</button>
+                                <button type="submit" class="btn btn-link nav-link" style="display:inline; cursor:pointer;">Выход ({{ user.username }})</button>
                             </form>
                         </li>
                     {% else %}
