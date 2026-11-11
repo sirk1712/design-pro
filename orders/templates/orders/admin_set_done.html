@@ -1,0 +1,25 @@
+{% extends "orders/base.html" %}
+
+{% block content %}
+  <div class="row justify-content-center">
+      <div class="col-md-6">
+          <div class="card mt-5 border-success">
+              <div class="card-header bg-success text-white">
+                  <h4 class="mb-0">Завершить заявку: {{ order.title }}</h4>
+              </div>
+              <div class="card-body">
+                  <!-- enctype="multipart/form-data" обязателен для загрузки файлов! -->
+                  <form method="post" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="mb-3">
+                          <label class="form-label">Фото готового дизайна (обязательно)</label>
+                          <input type="file" name="design_photo" class="form-control" required accept=".jpg,.jpeg,.png,.bmp">
+                      </div>
+                      <button type="submit" class="btn btn-success">Завершить</button>
+                      <a href="{% url 'admin_panel' %}" class="btn btn-secondary">Отмена</a>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+{% endblock %}

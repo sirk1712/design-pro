@@ -13,9 +13,13 @@
   <h3 class="mt-5 mb-4">Наши последние работы</h3>
   <div class="row">
     {% for order in completed_orders %}
-      <div class="col-md-3">
-        <div class="card">
-          <img src="{{ order.photo.url }}" class="card-img-top" alt="{{ order.title }}" style="height: 200px; object-fit: cover;">
+      <div class="col-md-3 mb-4">
+        <div class="card h-100">
+          {% if order.design_photo %}
+              <img src="{{ order.design_photo.url }}" class="card-img-top" alt="Дизайн" style="height: 200px; object-fit: cover;">
+          {% else %}
+              <img src="{{ order.photo.url }}" class="card-img-top" alt="Помещение" style="height: 200px; object-fit: cover;">
+          {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ order.title }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{ order.category.name }}</h6>

@@ -1,0 +1,23 @@
+{% extends "orders/base.html" %}
+
+{% block content %}
+  <div class="row justify-content-center">
+      <div class="col-md-6">
+          <div class="card mt-5 border-danger">
+              <div class="card-header bg-danger text-white">
+                  <h4 class="mb-0">Удаление категории</h4>
+              </div>
+              <div class="card-body text-center">
+                  <p>Вы уверены, что хотите удалить категорию <strong>"{{ category.name }}"</strong>?</p>
+                  <p class="text-danger small">Внимание! Все заявки в этой категории также будут удалены!</p>
+
+                  <form method="post">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Да, удалить</button>
+                      <a href="{% url 'admin_categories' %}" class="btn btn-secondary">Отмена</a>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+{% endblock %}

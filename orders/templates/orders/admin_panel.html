@@ -28,10 +28,10 @@
                   <td>{{ order.get_status_display }}</td>
                   <td>
                       {% if order.status == 'new' %}
-                          <a href="{% url 'change_status' order.pk 'in_progress' %}" class="btn btn-sm btn-warning">В работу</a>
-                          <a href="{% url 'change_status' order.pk 'done' %}" class="btn btn-sm btn-success">Выполнено</a>
+                        <a href="{% url 'set_in_progress' order.pk %}" class="btn btn-sm btn-warning">В работу</a>
+                        <a href="{% url 'set_done' order.pk %}" class="btn btn-sm btn-success">Выполнено</a>
                       {% else %}
-                          <span class="text-muted">Действий нет</span>
+                        <span class="text-muted">Действий нет</span>
                       {% endif %}
                   </td>
               </tr>

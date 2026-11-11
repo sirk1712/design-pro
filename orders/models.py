@@ -41,6 +41,9 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Статус")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Временная метка")
 
+    admin_comment = models.TextField(blank=True, null=True, verbose_name="Комментарий администратора")
+    design_photo = models.ImageField(upload_to='design_photos/', blank=True, null=True, verbose_name="Фото готового дизайна")
+
     class Meta:
         ordering = ['-created_at']  # Сначала новые
         verbose_name = "Заявка"
